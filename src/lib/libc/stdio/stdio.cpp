@@ -2,11 +2,11 @@
 #include <string.h>
 
 
-// void
-// stdio_init( limine_framebuffer_response *res )
-// {
+void
+stdio_init( limine_framebuffer_response *res )
+{
 
-// }
+}
 
 
 // int

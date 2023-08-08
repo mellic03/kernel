@@ -1,9 +1,8 @@
-# INCLUDES = -I./src/libc/stdio -I./src/libc/stdlib -I./src/libc/string -I./src/limine
-# LIBINCLUDES = -L./src/libc/stdio -L./src/libc/stdlib -L./src/libc/string -L./src/limine
+INCLUDES     =  -I./src/include/libc    -I./src/include/libc++    -I./src/include/limine
+LIBINCLUDES  =  -L./src/lib/libc		-L./src/lib/libc++
 
-INCLUDES    = -I./src/limine    -I./src/libc
-LIBINCLUDES = -L./src/limine    -L./src/libc
 INC = $(INCLUDES) $(LIBINCLUDES)
+
 
 # Nuke built-in rules and variables.
 override MAKEFLAGS += -rR

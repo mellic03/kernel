@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "terminal/terminal.hpp"
+
 
 static volatile struct limine_framebuffer_request framebuffer_request = {
     .id = LIMINE_FRAMEBUFFER_REQUEST,
@@ -63,17 +65,16 @@ extern "C" void _start(void)
     limine_file *fh = module_res->modules[0]; 
     char *baseptr = (char *)(fh->address);
 
-    for (uint64_t i=0; i<fh->size; i++)
-    {
-        terminal_printf(terminal, "%c", *(baseptr + i));
-    }
-    // terminal_printf(terminal, "modules: %d\n\n", module_res->module_count);
-    // for (uint64_t i=0; i<module_res->module_count; i++)
+    // for (uint64_t i=0; i<fh->size; i++)
     // {
-    //     terminal_printf(terminal, "module %d, address %d\n", i, module_res->modules[i]->address);
+    //     terminal_printf(terminal, "%c", *(baseptr + i));
     // }
-    // terminal_printf(terminal, "\n");
-
+    terminal_printf(terminal, "modules: %d\n\n", module_res->module_count);
+    for (uint64_t i=0; i<module_res->module_count; i++)
+    {
+        terminal_printf(terminal, "module %d, address %d\n", i, module_res->modules[i]->address);
+    }
+    terminal_printf(terminal, "\n");
 
 
     terminal_printf(terminal, "framebuffers detected: %d\n", framebuffer_request.response->framebuffer_count);
