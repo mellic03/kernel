@@ -24,7 +24,8 @@ static volatile struct limine_module_request mod_req = {
 
 
 // Halt and catch fire function.
-static void hcf(void) {
+static void hcf(void)
+{
     asm ("cli");
     for (;;) {
         asm ("hlt");
