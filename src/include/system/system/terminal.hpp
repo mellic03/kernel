@@ -5,7 +5,6 @@
 #include <string.h>
 
 
-
 struct Terminal
 {
     char *data;

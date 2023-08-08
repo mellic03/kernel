@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <initializer_list>
 
-#include "../util/util.h"
+#include "../util/util.hpp"
 
 
 namespace std

@@ -12,7 +12,7 @@ int         memcmp  ( const void *s1, const void *s2, size_t n );
 
 
 
-void        alloc_init( limine_memmap_response *res );
+int         stdlib_init( limine_memmap_response *res );
 
 void *      malloc ( size_t size );
 void *      calloc ( size_t n, size_t size );

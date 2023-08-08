@@ -1,5 +1,5 @@
-INCLUDES     =  -I./src/include/libc    -I./src/include/libc++    -I./src/include/limine
-LIBINCLUDES  =  -L./src/lib/libc		-L./src/lib/libc++
+INCLUDES     =  -I./src/include/libc  -I./src/include/libc++  -I./src/include/limine  -I./src/include/system
+LIBINCLUDES  =  -L./src/lib/libc	  -L./src/lib/libc++	  					      -L./src/lib/system
 
 INC = $(INCLUDES) $(LIBINCLUDES)
 
@@ -60,7 +60,6 @@ override CFLAGS += \
     -mabi=sysv \
     -mno-80387 \
     -mno-mmx \
-    -mno-sse \
     -mno-sse2 \
     -mno-red-zone
  

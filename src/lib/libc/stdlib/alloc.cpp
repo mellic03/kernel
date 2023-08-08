@@ -1,18 +1,20 @@
 #include <stdlib.h>
-
+#include <stdio.h>
 
 limine_memmap_entry *   memblock;
 size_t                  memcursor;
 size_t                  memlimit;
 
 
-void
-alloc_init( limine_memmap_response *res )
+int
+stdlib_init( limine_memmap_response *res )
 {
     uint64_t count = res->entry_count;
     memblock  = res->entries[1];
     memcursor = 0;
     memlimit  = res->entries[1]->length;
+
+    return 0;
 }
 
 

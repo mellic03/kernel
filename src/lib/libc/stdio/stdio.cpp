@@ -1,63 +1,86 @@
 #include <stdio.h>
 #include <string.h>
+#include <system/terminal.hpp>
+
+limine_framebuffer *        m_framebuffer;
+Terminal                    m_terminal;
 
 
-void
+int
 stdio_init( limine_framebuffer_response *res )
 {
+    if (res == NULL || res->framebuffer_count < 1)
+    {
+        return 1;
+    }
 
+    m_framebuffer = res->framebuffers[0];
+    m_terminal    = terminal_new(m_framebuffer);
+
+    return 0;
 }
 
 
-// int
-// printf( const char *format, ... )
-// {
-//     va_list args;
-//     size_t idx = 0;
-//     size_t num_spec = 0;
+static size_t
+internal_printf_num_spec( const char *format )
+{
+    size_t num_spec = 0;
 
-//     for (size_t i=0; i<strlen(format); i++)
-//     {
-//         if (format[i] == '%')
-//             num_spec += 1;
-//     }
+    for (size_t i=0; i<strlen(format); i++)
+        if (format[i] == '%')
+            num_spec += 1;
+
+    return num_spec;
+}
 
 
-//     va_start ( args, num_spec );
+static void
+internal_printf( Terminal &t, char format, va_list args )
+{
+    switch (format)
+    {
+    case 'c':
+        terminal_putchar(m_terminal, va_arg(args, int));
+        break;
 
-//     while (format[idx] != '\0')
-//     {
-//         if (format[idx] == '%')
-//         {
-//             idx += 1;
+    case 's':
+        terminal_putstr(m_terminal, va_arg(args, const char *));
+        break;
 
-//             if (format[idx] == 'c')
-//             {
-//                 // terminal_putchar(va_arg(args, int));
-//             }
+    case 'd':
+        terminal_putint(m_terminal, va_arg(args, uint64_t));
+        break;
+    }
+}
 
-//             else if (format[idx] == 's')
-//             {
-//                 // terminal_putstr(va_arg(args, const char *));
-//             }
 
-//             else if (format[idx] == 'd')
-//             {
-//                 // terminal_putint(va_arg(args, uint64_t));
-//             }
-//         }
+int
+printf( const char *format, ... )
+{
+    va_list args;
+    size_t num_spec = internal_printf_num_spec(format);
 
-//         else
-//         {
-//             // terminal_putchar(format[idx]);
-//         }
+    va_start ( args, num_spec );
 
-//         idx += 1;
-//     }
+    while (*format)
+    {
+        if (*format == '%')
+        {
+            format += 1;
+            internal_printf(m_terminal, *format, args);
+        }
 
-//     va_end( args );
+        else
+        {
+            terminal_putchar(m_terminal, *format);
+        }
 
-//     return num_spec;
-// }
+        format += 1;
+    }
+
+    va_end( args );
+
+    return num_spec;
+}
 
 
