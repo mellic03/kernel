@@ -1,529 +1,27 @@
 #include <system/terminal.hpp>
+#include <system/graphics.hpp>
+#include <stdlib.h>
 
 
-namespace charset
+uint8_t *   systerm_fontdata;
+Terminal    systerm_main_terminal;
+
+
+int
+system::terminal::init( limine_file *fontdata )
 {
-    uint8_t space[8][8]
-    {
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 }
-    };
-
-    uint8_t A[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 1, 1, 1, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 }
-    };
-
-    uint8_t B[8][8]
-    {
-        { 0, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 1, 1, 1, 1, 0, 0 }
-    };
-
-    uint8_t C[8][8]
-    {
-        { 0, 1, 1, 1, 1, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 1, 1, 1, 1, 1, 0 }
-    };
-
-    uint8_t D[8][8]
-    {
-        { 0, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 1, 1, 1, 1, 0, 0 }
-    };
-
-    uint8_t E[8][8]
-    {
-        { 0, 1, 1, 1, 1, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 1, 1, 1, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 1, 1, 1, 1, 1, 0 }
-    };
-
-    uint8_t F[8][8]
-    {
-        { 0, 1, 1, 1, 1, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 1, 1, 1, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 }
-    };
-
-    uint8_t G[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 }
-    };
-
-    uint8_t H[8][8]
-    {
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 1, 1, 1, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 }
-    };
-
-    uint8_t I[8][8]
-    {
-        { 0, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 1, 1, 1, 1, 1, 0, 0 }
-    };
-
-    uint8_t J[8][8]
-    {
-        { 0, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 1, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 1, 0, 0, 0, 0, 0 }
-    };
-
-    uint8_t K[8][8]
-    {
-        { 0, 0, 1, 0, 0, 0, 1, 0 },
-        { 0, 0, 1, 0, 0, 1, 1, 0 },
-        { 0, 0, 1, 0, 1, 1, 0, 0 },
-        { 0, 0, 1, 1, 1, 0, 0, 0 },
-        { 0, 0, 1, 1, 1, 0, 0, 0 },
-        { 0, 0, 1, 0, 1, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 1, 0 },
-        { 0, 0, 1, 0, 0, 0, 1, 0 }
-    };
-
-    uint8_t L[8][8]
-    {
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 1, 1, 1, 1, 1, 0 }
-    };
-
-    uint8_t M[8][8]
-    {
-        { 1, 0, 0, 0, 0, 0, 1, 0 },
-        { 1, 1, 0, 0, 0, 1, 1, 0 },
-        { 1, 1, 0, 0, 0, 1, 1, 0 },
-        { 1, 1, 1, 0, 1, 1, 1, 0 },
-        { 1, 0, 1, 0, 1, 0, 1, 0 },
-        { 1, 0, 1, 1, 1, 0, 1, 0 },
-        { 1, 0, 0, 1, 0, 0, 1, 0 },
-        { 1, 0, 0, 1, 0, 0, 1, 0 }
-    };
-
-    uint8_t N[8][8]
-    {
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 1, 0, 0, 0, 1, 0 },
-        { 0, 1, 1, 1, 0, 0, 1, 0 },
-        { 0, 1, 0, 1, 1, 0, 1, 0 },
-        { 0, 1, 0, 0, 1, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 }
-    };
-
-    uint8_t O[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 }
-    };
-
-    uint8_t P[8][8]
-    {
-        { 0, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 }
-    };
-
-    uint8_t Q[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 1, 1, 1, 0 },
-        { 0, 1, 0, 0, 1, 1, 1, 0 },
-        { 0, 0, 1, 1, 1, 1, 1, 0 }
-    };
-
-
-    uint8_t R[8][8]
-    {
-        { 0, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 1, 1, 0, 0, 0 },
-        { 0, 1, 0, 0, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 1, 1, 0 }
-    };
-
-
-    uint8_t S[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 1, 0 },
-        { 0, 0, 0, 0, 0, 0, 1, 0 },
-        { 0, 0, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 1, 1, 1, 1, 0, 0 }
-    };
-
-    uint8_t T[8][8]
-    {
-        { 1, 1, 1, 1, 1, 1, 1, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 }
-    };
-
-    uint8_t U[8][8]
-    {
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 }
-    };
-
-    uint8_t V[8][8]
-    {
-        { 0, 1, 0, 0, 0, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 1, 0, 0 },
-        { 0, 1, 1, 0, 1, 1, 0, 0 },
-        { 0, 0, 1, 0, 1, 0, 0, 0 },
-        { 0, 0, 1, 1, 1, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 }
-    };
-
-    uint8_t W[8][8]
-    {
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 1, 1, 0, 1, 0 },
-        { 0, 1, 0, 1, 1, 0, 1, 0 },
-        { 0, 1, 1, 1, 1, 1, 1, 0 },
-        { 0, 1, 1, 0, 0, 1, 1, 0 },
-        { 0, 1, 1, 0, 0, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 }
-    };
-
-    uint8_t X[8][8]
-    {
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 1, 0, 0, 1, 1, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 0, 1, 1, 0, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 1, 0, 0, 1, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 },
-        { 0, 1, 0, 0, 0, 0, 1, 0 }
-    };
-
-    uint8_t Y[8][8]
-    {
-        { 1, 0, 0, 0, 0, 0, 1, 0 },
-        { 1, 1, 0, 0, 0, 1, 1, 0 },
-        { 0, 1, 1, 0, 1, 1, 0, 0 },
-        { 0, 0, 1, 1, 1, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0, 0 }
-    };
-
-    uint8_t Z[8][8]
-    {
-        { 0, 1, 1, 1, 1, 1, 1, 0 },
-        { 0, 0, 0, 0, 0, 1, 1, 0 },
-        { 0, 0, 0, 0, 1, 1, 0, 0 },
-        { 0, 0, 0, 1, 1, 0, 0, 0 },
-        { 0, 0, 1, 1, 0, 0, 0, 0 },
-        { 0, 1, 1, 0, 0, 0, 0, 0 },
-        { 0, 1, 1, 0, 0, 0, 0, 0 },
-        { 0, 1, 1, 1, 1, 1, 1, 0 }
-    };
+    systerm_fontdata = (uint8_t *)fontdata->address;
+    systerm_main_terminal = terminal_new(graphics::getfb());
+    return 0;
+}
 
 
 
-
-
-
-    uint8_t zero[8][8]
-    {
-        { 0, 0, 1, 1, 1, 0, 0, 0 },
-        { 0, 1, 0, 0, 0, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 1, 0, 0 },
-        { 0, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 1, 0, 0 },
-        { 0, 1, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 1, 1, 0, 0, 0 }
-    };
-
-    uint8_t one[8][8]
-    {
-        { 0, 0, 0, 1, 1, 0, 0, 0 },
-        { 0, 0, 0, 0, 1, 0, 0, 0 },
-        { 0, 0, 0, 0, 1, 0, 0, 0 },
-        { 0, 0, 0, 0, 1, 0, 0, 0 },
-        { 0, 0, 0, 0, 1, 0, 0, 0 },
-        { 0, 0, 0, 0, 1, 0, 0, 0 },
-        { 0, 0, 0, 0, 1, 0, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 }
-    };
-
-
-    uint8_t two[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 1, 1, 0, 0 },
-        { 0, 0, 0, 1, 1, 0, 0, 0 },
-        { 0, 0, 1, 1, 0, 0, 0, 0 },
-        { 0, 0, 1, 0, 0, 0, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 }
-    };
-
-
-    uint8_t three[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 }
-    };
-
-    uint8_t four[8][8]
-    {
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 1, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 }
-    };
-
-    uint8_t five[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 0, 0, 0 },
-        { 0, 0, 1, 0, 0, 0, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 }
-    };
-
-    uint8_t six[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 0, 0, 0 },
-        { 0, 0, 1, 0, 0, 0, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 }
-    };
-
-    uint8_t seven[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 }
-    };
-
-    uint8_t eight[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 }
-    };
-
-    uint8_t nine[8][8]
-    {
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 0, 0 }
-    };
-
-
-    uint8_t colon[8][8]
-    {
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 1, 0, 0, 0 },
-        { 0, 0, 0, 1, 1, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 1, 0, 0, 0 },
-        { 0, 0, 0, 1, 1, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 }
-    };
-
-    uint8_t period[8][8]
-    {
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 1, 0, 0, 0, 0, 0 },
-        { 0, 1, 1, 0, 0, 0, 0, 0 }
-    };
-
-    uint8_t comma[8][8]
-    {
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 1, 0, 0, 0 },
-        { 0, 0, 0, 1, 1, 0, 0, 0 },
-        { 0, 1, 1, 1, 0, 0, 0, 0 }
-    };
-
-    uint8_t hash[8][8]
-    {
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-        { 0, 0, 1, 0, 0, 1, 0, 0 },
-    };
-
-    uint8_t underscore[8][8]
-    {
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 1, 1, 1, 1, 1, 1, 0 }
-    };
-};
-
-
-
-Terminal terminal_new( limine_framebuffer *fb )
+Terminal
+terminal_new( limine_framebuffer *fb )
 {
     Terminal t;
-    t.data      = (char *)malloc(2048 * sizeof(char));
+    t.data      = (uint8_t *)malloc(2048 * sizeof(uint8_t));
     t.size      = 0;
     t.cursor    = 0;
 
@@ -536,15 +34,17 @@ Terminal terminal_new( limine_framebuffer *fb )
 }
 
 
-static void putchar( Terminal &t, uint8_t arr[8][8] )
+static void
+f_putchar( Terminal &t, uint64_t char_value )
 {
     uint32_t *data = (uint32_t *)(t.fb->address);
+    uint8_t  *pixels = &systerm_fontdata[8*8*char_value];
 
     for (int i=0; i<8; i++)
     {
         for (int j=0; j<8; j++)
         {
-            if (arr[i][j] == 1)
+            if (pixels[8*i + j] == 1)
             {
                 data[(t.rline_num+i) * (t.fb->pitch / 4) + (t.rcursor + j)] = 0xffffff;
             }
@@ -556,7 +56,7 @@ static void putchar( Terminal &t, uint8_t arr[8][8] )
 
 
 void
-terminal_putchar( Terminal &t, char c )
+system::terminal::putchar( Terminal &t, char c )
 {
     if (c == 8)
     {
@@ -569,28 +69,28 @@ terminal_putchar( Terminal &t, char c )
         t.size += 1;
     }
 
-    terminal_render(t);
+    terminal::render(t);
 }
 
 
 void
-terminal_putstr( Terminal &t, const char *str )
+system::terminal::putstr( Terminal &t, const char *str )
 {
     int idx = 0;
     while (str[idx] != '\0')
     {
-        terminal_putchar(t, str[idx]);
+        system::terminal::putchar(t, str[idx]);
         idx += 1;
     }
 }
 
 
 void
-terminal_putint( Terminal &t, uint64_t n )
+system::terminal::putint( Terminal &t, uint64_t n )
 {
     if (n == 0)
     {
-        terminal_putchar(t, '0');
+        system::terminal::putchar(t, '0');
         return;
     }
 
@@ -614,22 +114,12 @@ terminal_putint( Terminal &t, uint64_t n )
     }
 
     str[len] = '\0';
-    terminal_putstr(t, str);
+    system::terminal::putstr(t, str);
 }
 
 
-
 void
-terminal_backspc ( Terminal &t )
-{
-    if (t.size > 0)
-        t.size -= 1;
-}
-
-
-
-void
-terminal_clear( Terminal &t )
+system::terminal::clear( Terminal &t )
 {
     t.rline_num = 0;
     t.rcursor = 0;
@@ -647,144 +137,74 @@ terminal_clear( Terminal &t )
 
 
 void
-terminal_render( Terminal &t )
+system::terminal::backspc ( Terminal &t )
 {
-    terminal_clear(t);
+    if (t.size > 0)
+        t.size -= 1;
+}
+
+
+void
+system::terminal::render( Terminal &t )
+{
+    system::terminal::clear(t);
 
     for (size_t i=0; i<t.size; i++)
     {
         switch(t.data[i])
         {
-            case ' ':   t.rcursor += 8;                break;
-            case 'a':   putchar(t, charset::A);        break;
-            case 'b':   putchar(t, charset::B);        break;
-            case 'c':   putchar(t, charset::C);        break;
-            case 'd':   putchar(t, charset::D);        break;
-            case 'e':   putchar(t, charset::E);        break;
-            case 'f':   putchar(t, charset::F);        break;
-            case 'g':   putchar(t, charset::G);        break;
-            case 'h':   putchar(t, charset::H);        break;
-            case 'i':   putchar(t, charset::I);        break;
-            case 'j':   putchar(t, charset::J);        break;
-            case 'k':   putchar(t, charset::K);        break;
-            case 'l':   putchar(t, charset::L);        break;
-            case 'm':   putchar(t, charset::M);        break;
-            case 'n':   putchar(t, charset::N);        break;
-            case 'o':   putchar(t, charset::O);        break;
-            case 'p':   putchar(t, charset::P);        break;
-            case 'q':   putchar(t, charset::Q);        break;
-            case 'r':   putchar(t, charset::R);        break;
-            case 's':   putchar(t, charset::S);        break;
-            case 't':   putchar(t, charset::T);        break;
-            case 'u':   putchar(t, charset::U);        break;
-            case 'v':   putchar(t, charset::V);        break;
-            case 'w':   putchar(t, charset::W);        break;
-            case 'x':   putchar(t, charset::X);        break;
-            case 'y':   putchar(t, charset::Y);        break;
-            case 'z':   putchar(t, charset::Z);        break;
-
-            case '0':   putchar(t, charset::zero);     break;
-            case '1':   putchar(t, charset::one);      break;
-            case '2':   putchar(t, charset::two);      break;
-            case '3':   putchar(t, charset::three);    break;
-            case '4':   putchar(t, charset::four);     break;
-            case '5':   putchar(t, charset::five);     break;
-            case '6':   putchar(t, charset::six);      break;
-            case '7':   putchar(t, charset::seven);    break;
-            case '8':   putchar(t, charset::eight);    break;
-            case '9':   putchar(t, charset::nine);     break;
-
-            case '.':   putchar(t, charset::period);    break;
-            case ',':   putchar(t, charset::comma);     break;
-            case ':':   putchar(t, charset::colon);     break;
-            case '#':   putchar(t, charset::hash);      break;
+            case ' ':
+                t.rcursor += 8;
+                break;
 
             case '\t':
                 t.rcursor += 8;
                 while (t.rcursor % (23*8) != 0)
-                {
                     t.rcursor += 8;
-                }
                 break;
 
             case '\n':
                 t.rline_num += 16;
                 t.rcursor = 0;
-                putchar(t, charset::space);
+                f_putchar(t, ' ');
+                break;
+
+            default:
+                f_putchar(t, t.data[i]);
                 break;
         }
     }
 
-    putchar(t, charset::underscore);
+    f_putchar(t, '_');
 }
 
 
 
 void
-terminal_put( Terminal &t, char c )
+system::terminal::putchar( char c )
 {
-    terminal_putchar(t, c);
+    terminal::putchar( systerm_main_terminal, c );
 }
-
 
 void
-terminal_put( Terminal &t, const char *str )
+system::terminal::putstr( const char *str )
 {
-    terminal_putstr(t, str);
+    terminal::putstr( systerm_main_terminal, str );
 }
-
 
 void
-terminal_put( Terminal &t, uint64_t n )
+system::terminal::putint( uint64_t n )
 {
-    terminal_putint(t, n);
+    terminal::putint( systerm_main_terminal, n );
 }
-
 
 void
-terminal_printf( Terminal &t, const char *format, ... )
+system::terminal::backspc( )
 {
-    va_list args;
-
-    size_t num_spec = 0;
-    size_t len = strlen(format);
-    
-    for (size_t i=0; i<len; i++)
-        if (format[i] == '%')
-            num_spec += 1;
-    va_start ( args, num_spec );
-
-
-    while (*format)
-    {
-        if (*format == '%')
-        {
-            format += 1;
-
-            if (*format == 'c')
-            {
-                terminal_putchar(t, va_arg(args, int));
-            }
-
-            else if (*format == 's')
-            {
-                terminal_putstr(t, va_arg(args, const char *));
-            }
-
-            else if (*format == 'd')
-            {
-                terminal_putint(t, va_arg(args, uint64_t));
-            }
-        }
-
-        else
-        {
-            terminal_putchar(t, *format);
-        }
-
-        format += 1;
-    }
-    va_end( args );
+    terminal::backspc( systerm_main_terminal );
 }
+
+
+
 
 

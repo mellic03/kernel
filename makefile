@@ -58,9 +58,11 @@ override CFLAGS += \
     -m64 \
     -march=x86-64 \
     -mabi=sysv \
+	-mhard-float \
     -mno-80387 \
+	-mno-sse \
+	-mno-sse2 \
     -mno-mmx \
-    -mno-sse2 \
     -mno-red-zone
  
 # Internal C preprocessor flags that should not be changed by the user.

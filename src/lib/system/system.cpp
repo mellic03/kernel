@@ -1,13 +1,12 @@
-#include <stddef.h>
 #include <limine.hpp>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <system.hpp>
 #include <system/filesystem.hpp>
+#include <system/terminal.hpp>
+#include <system/graphics.hpp>
 
+#include <stdio.h>
 
-Sys_stat m_stat = Sys_stat::UNINITIALIZED;
 
 static volatile limine_framebuffer_request  framebuffer_request
 {
@@ -28,46 +27,32 @@ static volatile limine_module_request       mod_req
 };
 
 
-limine_framebuffer *
-getfb()
+
+int
+kernel_init()
 {
-    return framebuffer_request.response->framebuffers[0];
-}
-
-
-// Halt and catch fire function.
-static void hcf(void)
-{
-    asm ("cli");
-    for (;;) {
-        asm ("hlt");
-    }
-}
-
-
-Sys_stat
-system_init()
-{
-    // OS initialization -------------------------------------------
-    int filesystem_status = filesystem_init(mod_req.response);
+    // Kernel initialization -------------------------------------------
+    int filesystem_status = system::fs::init(memmap_request.response);
+    int graphics_status   = system::graphics::init(framebuffer_request.response);
+    int terminal_status   = system::terminal::init(mod_req.response->modules[0]);
     // -------------------------------------------------------------
 
-
-    // libc initialization -----------------------------------------
-    int stdlib_status = stdlib_init(memmap_request.response);
-    int stdio_status  = stdio_init(framebuffer_request.response);
-    // -------------------------------------------------------------
-
-
-    printf("\nframebuffers: 1\n");
 
     printf("\n");
+    for (size_t i=0; i<mod_req.response->module_count; i++)
+    {
+        auto mod = mod_req.response->modules[i];
+        printf("module: %d, base: %d, size: %d\n", i, mod->address, mod->size);
+    }
+    printf("\n");
+
+
 
     for (uint64_t i=0; i<memmap_request.response->entry_count; i++)
     {
         limine_memmap_entry *entry = memmap_request.response->entries[i];
 
-        printf("memmap %d\tsize: %d\tbase:%d", i, entry->length, entry->base);
+        printf("memmap %d\tsize: %d\tbase: %d", i, entry->length, entry->base);
 
         switch (entry->type)
         {
@@ -88,11 +73,7 @@ system_init()
     }
 
 
-
-
-
-
-    return Sys_stat::GOOD;
+    return 0;
 }
 
 

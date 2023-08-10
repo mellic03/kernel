@@ -3,14 +3,17 @@
 #include <stdarg.h>
 #include <limine.hpp>
 #include <system.hpp>
-
-// #include "terminal/terminal.hpp"
-// #include "device/device.h"
+#include <system/terminal.hpp>
 
 
-int     stdio_init( limine_framebuffer_response *res );
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 int     printf( const char *format, ... );
 
 
-
+#ifdef __cplusplus
+}
+#endif

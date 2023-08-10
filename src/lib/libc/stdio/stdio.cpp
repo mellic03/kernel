@@ -2,53 +2,42 @@
 #include <string.h>
 #include <system/terminal.hpp>
 
-limine_framebuffer *        m_framebuffer;
-Terminal                    m_terminal;
-
-
-int
-stdio_init( limine_framebuffer_response *res )
-{
-    if (res == NULL || res->framebuffer_count < 1)
-    {
-        return 1;
-    }
-
-    m_framebuffer = res->framebuffers[0];
-    m_terminal    = terminal_new(m_framebuffer);
-
-    return 0;
-}
 
 
 static size_t
-internal_printf_num_spec( const char *format )
+num_format_specs( const char *format )
 {
     size_t num_spec = 0;
 
-    for (size_t i=0; i<strlen(format); i++)
-        if (format[i] == '%')
+    while (*format)
+    {
+        if (*format == '%')
+        {
             num_spec += 1;
+            format += 1;
+        }
+        format += 1;
+    }
 
     return num_spec;
 }
 
 
 static void
-internal_printf( Terminal &t, char format, va_list args )
+internal_printf( char format, va_list args )
 {
     switch (format)
     {
     case 'c':
-        terminal_putchar(m_terminal, va_arg(args, int));
+        system::terminal::putchar(va_arg(args, int));
         break;
 
     case 's':
-        terminal_putstr(m_terminal, va_arg(args, const char *));
+        system::terminal::putstr(va_arg(args, const char *));
         break;
 
     case 'd':
-        terminal_putint(m_terminal, va_arg(args, uint64_t));
+        system::terminal::putint(va_arg(args, uint64_t));
         break;
     }
 }
@@ -58,7 +47,7 @@ int
 printf( const char *format, ... )
 {
     va_list args;
-    size_t num_spec = internal_printf_num_spec(format);
+    size_t num_spec = num_format_specs(format);
 
     va_start ( args, num_spec );
 
@@ -67,12 +56,12 @@ printf( const char *format, ... )
         if (*format == '%')
         {
             format += 1;
-            internal_printf(m_terminal, *format, args);
+            internal_printf(*format, args);
         }
 
         else
         {
-            terminal_putchar(m_terminal, *format);
+            system::terminal::putchar(*format);
         }
 
         format += 1;

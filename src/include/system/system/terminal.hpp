@@ -7,31 +7,32 @@
 
 struct Terminal
 {
-    char *data;
-    uint32_t size;
-    uint32_t cursor;
+    uint8_t *data = nullptr;
+    size_t  size;
+    size_t  cursor;
 
-    uint32_t rline_num;
-    uint32_t rcursor;
-
-    limine_framebuffer *fb;
+    size_t  rline_num;
+    size_t  rcursor;
+    limine_framebuffer *fb = nullptr;
 };
-
 
 Terminal    terminal_new     ( limine_framebuffer *     );
 
-void        terminal_putchar ( Terminal &, char         );
-void        terminal_putstr  ( Terminal &, const char * );
-void        terminal_putint  ( Terminal &, uint64_t     );
-void        terminal_backspc ( Terminal &               );
+namespace system::terminal
+{
+    int         init( limine_file *fontdata );
 
-void        terminal_clear   ( Terminal & );
-void        terminal_render  ( Terminal & );
+    void        putchar ( Terminal &, char         );
+    void        putstr  ( Terminal &, const char * );
+    void        putint  ( Terminal &, uint64_t     );
+    void        backspc ( Terminal &               );
 
-void        terminal_put ( Terminal &, char         );
-void        terminal_put ( Terminal &, const char * );
-void        terminal_put ( Terminal &, uint64_t     );
+    void        putchar ( char         );
+    void        putstr  ( const char * );
+    void        putint  ( uint64_t     );
+    void        backspc (              );
 
-void        terminal_printf( Terminal &t, const char *format, ... );
-
+    void        clear   ( Terminal & );
+    void        render  ( Terminal & );
+};
 

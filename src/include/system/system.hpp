@@ -1,17 +1,8 @@
 #pragma once
 
+#include <stdint.h>
+#include <stddef.h>
 
 
-enum class Sys_stat
-{
-    UNINITIALIZED,
-    GOOD,
-    BAD
-};
-
-limine_framebuffer *getfb();
-
-Sys_stat system_init();
-
-
+int kernel_init();
 

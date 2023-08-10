@@ -1,32 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-limine_memmap_entry *   memblock;
-size_t                  memcursor;
-size_t                  memlimit;
-
-
-int
-stdlib_init( limine_memmap_response *res )
-{
-    uint64_t count = res->entry_count;
-    memblock  = res->entries[1];
-    memcursor = 0;
-    memlimit  = res->entries[1]->length;
-
-    return 0;
-}
+#include <system/filesystem.hpp>
 
 
 void *
 falloc( size_t size )
 {
-    if (memcursor + size > memlimit)
-        memcursor = 0;
-
-    memcursor += size;
-
-    return (void *)((&memblock->base)[memcursor - size]);
+    return system::fs::get_memory(size);
 }
 
 
@@ -38,16 +19,16 @@ malloc( size_t size )
 
 
 void *
-calloc( size_t n, size_t size )
+calloc( size_t n, size_t typesize )
 {
-    void *ptr = malloc(n*size);
+    uint8_t *ptr = (uint8_t *)malloc(n*typesize);
 
     for (size_t i=0; i<n; i++)
     {
-        ((uint8_t *)ptr)[i] = 0;
+        ptr[i] = 0;
     }
 
-    return ptr;
+    return (void *)ptr;
 }
 
 

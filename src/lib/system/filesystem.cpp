@@ -2,31 +2,64 @@
 #include <stddef.h>
 
 
-limine_module_response *    m_module_res;
-limine_file *               m_main_memory;
+limine_memmap_entry *sysfs_main_memory;
+limine_memmap_entry *sysfs_fast_memory;
+
 
 
 int
-filesystem_init( limine_module_response *res )
+system::fs::init( limine_memmap_response *res )
 {
-    m_module_res = res;
-
-    if (res == NULL)
-    {
-        return 1;
-    }
-
-    m_main_memory = res->modules[1];
-
-
-
+    sysfs_fast_memory = res->entries[1];
+    sysfs_main_memory = res->entries[4];
 
     return 0;
 }
 
 
-limine_file *
-getfs()
+void *
+system::fs::get_fast_memory( size_t num_bytes )
 {
-    return m_main_memory;
+    static uint64_t cursor = 0;
+
+    uint64_t length  = sysfs_fast_memory->length;
+    uint8_t *baseptr = (uint8_t *)(sysfs_fast_memory->base);
+
+    if (cursor + num_bytes > length)
+        cursor = 0;
+
+    cursor += num_bytes;
+
+    return baseptr + (cursor - num_bytes);
 }
+
+
+void *
+system::fs::get_memory( size_t num_bytes )
+{
+    static uint64_t cursor = 0;
+
+    uint64_t length  = sysfs_main_memory->length;
+    uint8_t *baseptr = (uint8_t *)(sysfs_main_memory->base);
+
+    if (cursor + num_bytes > length)
+        cursor = 0;
+
+    cursor += num_bytes;
+
+    /*
+        store cursor and size in some lookup datastructure.
+    */
+
+    return baseptr + (cursor - num_bytes);
+}
+
+
+void
+system::fs::free_memory( void *addr )
+{
+    // size_t length = lookupDS.get(addr);
+}
+
+
+
