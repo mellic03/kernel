@@ -1,30 +1,35 @@
 #include <system.hpp>
 #include <system/asm.hpp>
-#include "../OS/os.hpp"
+#include <system/graphics.hpp>
+#include <system/terminal.hpp>
+
+#include "../OS/os_entry.hpp"
 
 
 extern "C"
-void main( void )
+void kernel_entry( void )
 {
     int sys_status = kernel_init();
-    int os_status = os_init();
+    int os_status  = os_init();
 
+    int framecount = 0;
 
     while (1)
     {
-        /*
-            pre-frame setup
+        framecount += 1;
 
-        */
+        if (framecount % 5000 == 0)
+        {
+            system::graphics::swap_buffers();
+            system::terminal::render();
+            framecount = 0;
+        }
 
-        // OS main loop ----------
-        os_status = os_mainloop();
-        // -----------------------
 
-        /*
-            end-frame processing
+        os_status = os_loop();
 
-        */
+
     }
+
 }
 

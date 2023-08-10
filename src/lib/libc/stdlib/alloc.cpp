@@ -5,16 +5,16 @@
 
 
 void *
-falloc( size_t size )
+fmalloc( size_t size )
 {
-    return system::fs::get_memory(size);
+    return system::fs::get_fast_memory(size);
 }
 
 
 void *
 malloc( size_t size )
 {
-    return falloc(size);
+    return system::fs::get_memory(size);
 }
 
 

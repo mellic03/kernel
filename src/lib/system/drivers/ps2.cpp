@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <system/ps2.h>
+#include <system/drivers/io.hpp>
+#include <system/drivers/ps2.hpp>
 
 
 PS2Event
@@ -88,3 +88,36 @@ PS2_poll()
 
     return { PS2KeyEventType::NONE, '\0' };
 }
+
+
+
+bool
+system::ps2::keydown( char &c )
+{
+    PS2Event event = PS2_poll();
+
+    if (event.type == PS2KeyEventType::KEY_DOWN)
+    {
+        c = event.data;
+        return true;
+    }
+
+    return false;
+}
+
+
+bool
+system::ps2::keyup( char &c )
+{
+    PS2Event event = PS2_poll();
+
+    if (event.type == PS2KeyEventType::KEY_UP)
+    {
+        c = event.data;
+        return true;
+    }
+
+    return false; 
+}
+
+

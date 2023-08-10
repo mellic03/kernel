@@ -19,12 +19,12 @@ int         memcmp  ( const void *s1, const void *s2, size_t n );
 
 /** Fast malloc
  *  Does not guarantee data will not be overwritten.
+ *  Limited size! Only use for small allocations!
 */
-void *      falloc ( size_t size );
-void *      malloc ( size_t typesize );
-void *      calloc ( size_t n, size_t size );
-
-void        free   ( void *addr  );
+void *      fmalloc ( size_t size );
+void *      malloc  ( size_t size );
+void *      calloc  ( size_t n, size_t size );
+void        free    ( void *addr  );
 
 
 

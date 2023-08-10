@@ -34,3 +34,29 @@ fixed operator / ( const fixed &a, const fixed &b )
 }
 
 
+
+fixed fixed_sin( const fixed &f )
+{
+    /*
+        int n = fixed.data >> 16;
+        n %= 360;
+        return fixed_sin_table[n];
+    */
+
+    return 1;
+}
+
+
+fixed fixed_cos( const fixed &f )
+{
+    /*
+        int n = fixed.data >> 16;
+        n %= 360;
+        return fixed_sin_table[n];
+    */
+
+    return 1;
+}
+
+
+

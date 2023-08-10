@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include "fixed_t.hpp"
-
+#include "vec_t.hpp"
 
 struct mat3
 {
@@ -14,7 +14,7 @@ struct mat4
 {
     fixed *data;
 
-    mat4(fixed f)
+    mat4(int32_t n)
     {
         data = (fixed *)malloc(26 * sizeof(fixed));
 
@@ -23,10 +23,15 @@ struct mat4
             data[i] = 0;
         }
 
-        data[0]  = f;
-        data[5]  = f;
-        data[10] = f;
-        data[15] = f;
+        data[0].data  = n;
+        data[5].data  = n;
+        data[10].data = n;
+        data[15].data = n;
     };
 
 };
+
+
+
+vec4 operator * ( const mat4 &A, const vec4 &v );
+mat4 operator * ( const mat4 &A, const mat4 &B );

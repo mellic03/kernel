@@ -1,57 +1,79 @@
+#include "os_entry.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <system.hpp>
+#include <system/asm.hpp>
+#include <system/drivers/ps2.hpp>
 #include <system/terminal.hpp>
 #include <system/graphics.hpp>
 
 
 
-uint8_t last_data = 0;
 int xpos = 200;
 int count = 0;
 int dir = 1;
 
+bool released = true;
+char last_pressed;
 
 
+
+extern "C"
 int os_init( void )
 {
+    uint64_t tickrate = system::tickrate();
+    printf("tickrate: %d\n", tickrate);
 
-}
+    vec4 vec = { 1, 1, 1, 1 };
+    mat4 mat(1<<16);
 
+    printf("%d %d %d %d\n", vec.x, vec.y, vec.z, vec.w);
 
-int os_mainloop( void )
-{
-    limine_framebuffer *fb = system::graphics::getfb();
-
-    // auto event = PS2_poll();
-    // if (event.type == PS2KeyEventType::KEY_DOWN)
-    // {
-    //     if (last_data != event.data)
-    //     {
-    //         last_data = event.data;
-    //         printf("%c", (char)(event.data));
-    //     }
-    // }
-
-    // else if (event.type == PS2KeyEventType::KEY_UP)
-    // {
-    //     last_data = 0;
-    // }
-
-    count += 1;
-    if (count % 5000 == 0)
+    for (int i=0; i<4; i++)
     {
-        xpos += dir;
-        printf("\0");
-        rasterize(fb, {xpos, 500}, {100, 600}, {300, 600});
-    
-        if (xpos <= 0 || xpos >= 800)
-            dir = -dir;
+        for (int j=0; j<4; j++)
+        {
+            printf("%d ", mat.data[4*i+j]);
+        }
+        printf("\n");
     }
+    printf("\n");
+
 
     return 0;
 }
 
 
+extern "C"
+int os_loop( void )
+{
+    count += 1;
+    if (count % 5000 == 0)
+    {
+        xpos += dir;
+        rasterize({xpos, 500}, {100, 600}, {300, 600});
+    
+        if (xpos <= 80 || xpos >= 320)
+            dir = -dir;
+    }
+
+    char key;
+    if (system::ps2::keydown(key))
+    {
+        if (last_pressed != key)
+        {
+            last_pressed = key;
+            printf("%c", (char)(key));
+        }
+    }
+
+    else if (system::ps2::keyup(key))
+    {
+        last_pressed = 0;
+    }
+
+
+    return 0;
+}

@@ -2,8 +2,8 @@
 #include <stddef.h>
 
 
-limine_memmap_entry *sysfs_main_memory;
 limine_memmap_entry *sysfs_fast_memory;
+limine_memmap_entry *sysfs_main_memory;
 
 
 
@@ -48,7 +48,7 @@ system::fs::get_memory( size_t num_bytes )
     cursor += num_bytes;
 
     /*
-        store cursor and size in some lookup datastructure.
+        store cursor and size in some lookup data structure.
     */
 
     return baseptr + (cursor - num_bytes);

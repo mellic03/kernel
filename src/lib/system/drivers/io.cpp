@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <system/io.h>
+#include <system/io.hpp>
 
 
 uint8_t

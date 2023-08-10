@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "io.h"
+#include "io.hpp"
 
 
 enum class PS2EventType
@@ -33,3 +33,11 @@ struct PS2Event
 
 
 PS2Event    PS2_poll();
+
+
+namespace system::ps2
+{
+    bool        keydown ( char &c );
+    bool        keyup   ( char &c );
+};
+

@@ -13,10 +13,9 @@ struct Terminal
 
     size_t  rline_num;
     size_t  rcursor;
-    limine_framebuffer *fb = nullptr;
 };
 
-Terminal    terminal_new     ( limine_framebuffer *     );
+Terminal    terminal_new( );
 
 namespace system::terminal
 {
@@ -32,7 +31,7 @@ namespace system::terminal
     void        putint  ( uint64_t     );
     void        backspc (              );
 
-    void        clear   ( Terminal & );
-    void        render  ( Terminal & );
+    // void        clear   ( Terminal & );
+    void        render  ( );
 };
 

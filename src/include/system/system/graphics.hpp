@@ -7,7 +7,7 @@
 #include "graphics/vec_t.hpp"
 
 
-void rasterize( limine_framebuffer *fb, vec2 v0, vec2 v1, vec2 v2 );
+void rasterize( vec2 v0, vec2 v1, vec2 v2 );
 
 
 
@@ -16,6 +16,9 @@ namespace system::graphics
     int     init( limine_framebuffer_response *res );
     void    clear( uint32_t r, uint32_t g, uint32_t b );
 
-    limine_framebuffer *getfb();
+    void        swap_buffers();
+    uint32_t *  backbuffer( size_t &width, size_t &height, size_t &pitch );
+
+    // limine_framebuffer *getfb();
 };
 

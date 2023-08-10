@@ -11,16 +11,17 @@ int
 system::terminal::init( limine_file *fontdata )
 {
     systerm_fontdata = (uint8_t *)fontdata->address;
-    systerm_main_terminal = terminal_new(graphics::getfb());
+    systerm_main_terminal = terminal_new();
     return 0;
 }
 
 
 
 Terminal
-terminal_new( limine_framebuffer *fb )
+terminal_new(  )
 {
     Terminal t;
+
     t.data      = (uint8_t *)malloc(2048 * sizeof(uint8_t));
     t.size      = 0;
     t.cursor    = 0;
@@ -28,16 +29,15 @@ terminal_new( limine_framebuffer *fb )
     t.rcursor   = 0;
     t.rline_num = 0;
 
-    t.fb        = fb;
-
     return t;
 }
 
 
 static void
-f_putchar( Terminal &t, uint64_t char_value )
+fb_putchar( Terminal &t, uint64_t char_value )
 {
-    uint32_t *data = (uint32_t *)(t.fb->address);
+    size_t w, h, pitch;
+    uint32_t *data   = system::graphics::backbuffer(w, h, pitch);
     uint8_t  *pixels = &systerm_fontdata[8*8*char_value];
 
     for (int i=0; i<8; i++)
@@ -46,7 +46,7 @@ f_putchar( Terminal &t, uint64_t char_value )
         {
             if (pixels[8*i + j] == 1)
             {
-                data[(t.rline_num+i) * (t.fb->pitch / 4) + (t.rcursor + j)] = 0xffffff;
+                data[(t.rline_num+i) * (pitch / 4) + (t.rcursor + j)] = 0xffffff;
             }
         }
     }
@@ -69,7 +69,7 @@ system::terminal::putchar( Terminal &t, char c )
         t.size += 1;
     }
 
-    terminal::render(t);
+    terminal::render();
 }
 
 
@@ -118,23 +118,6 @@ system::terminal::putint( Terminal &t, uint64_t n )
 }
 
 
-void
-system::terminal::clear( Terminal &t )
-{
-    t.rline_num = 0;
-    t.rcursor = 0;
-
-    uint32_t *data = (uint32_t *)t.fb->address;
-
-    for (size_t i=0; i<t.fb->height; i++)
-    {
-        for (size_t j=0; j<t.fb->width; j++)
-        {
-            data[i * (t.fb->pitch / 4) + j] = 0x0101010;
-        }
-    }
-}
-
 
 void
 system::terminal::backspc ( Terminal &t )
@@ -145,9 +128,12 @@ system::terminal::backspc ( Terminal &t )
 
 
 void
-system::terminal::render( Terminal &t )
+system::terminal::render( )
 {
-    system::terminal::clear(t);
+    Terminal &t = systerm_main_terminal;
+
+    t.rline_num = 0;
+    t.rcursor   = 0;
 
     for (size_t i=0; i<t.size; i++)
     {
@@ -165,17 +151,16 @@ system::terminal::render( Terminal &t )
 
             case '\n':
                 t.rline_num += 16;
-                t.rcursor = 0;
-                f_putchar(t, ' ');
+                t.rcursor = 8;
                 break;
 
             default:
-                f_putchar(t, t.data[i]);
+                fb_putchar(t, t.data[i]);
                 break;
         }
     }
 
-    f_putchar(t, '_');
+    fb_putchar(t, '_');
 }
 
 
