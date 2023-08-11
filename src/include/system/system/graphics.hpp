@@ -8,6 +8,8 @@
 
 
 void rasterize( vec2 v0, vec2 v1, vec2 v2 );
+void rasterize( mat2 transform, vec2 v0, vec2 v1, vec2 v2 );
+void rasterize( mat4 transform, vec4 v0, vec4 v1, vec4 v2 );
 
 
 

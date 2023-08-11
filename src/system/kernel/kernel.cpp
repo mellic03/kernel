@@ -25,9 +25,7 @@ void kernel_entry( void )
             framecount = 0;
         }
 
-
         os_status = os_loop();
-
 
     }
 

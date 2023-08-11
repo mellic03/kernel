@@ -37,15 +37,16 @@ kernel_init()
     int terminal_status   = system::terminal::init(mod_req.response->modules[0]);
     // -------------------------------------------------------------
 
+    load_fixed_trigtables((int32_t *)mod_req.response->modules[1]->address);
+
 
     printf("\n");
     for (size_t i=0; i<mod_req.response->module_count; i++)
     {
         auto mod = mod_req.response->modules[i];
-        printf("module: %d, base: %d, size: %d\n", i, mod->address, mod->size);
+        printf("module %d\tsize %d\tbase: %d\n", i, mod->size, (uint64_t)(mod->address));
     }
     printf("\n");
-
 
 
     for (uint64_t i=0; i<memmap_request.response->entry_count; i++)

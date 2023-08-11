@@ -20,40 +20,39 @@ char last_pressed;
 
 
 
+fixed theta;
+
+
 extern "C"
 int os_init( void )
 {
-    uint64_t tickrate = system::tickrate();
-    printf("tickrate: %d\n", tickrate);
-
-    vec4 vec = { 1, 1, 1, 1 };
-    mat4 mat(1<<16);
-
-    printf("%d %d %d %d\n", vec.x, vec.y, vec.z, vec.w);
-
-    for (int i=0; i<4; i++)
-    {
-        for (int j=0; j<4; j++)
-        {
-            printf("%d ", mat.data[4*i+j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-
+    theta = 1;
 
     return 0;
 }
 
+int movy = 0;
 
 extern "C"
 int os_loop( void )
 {
+    mat4 trans = g3d::translate(mat4(1<<16), {250, 250, 0});
+    mat4 view(1<<16);
+
+
+    vec4 v0 = {  0,   -50,  0,  1 };
+    vec4 v1 = { -50,   50,  0,  1 };
+    vec4 v2 = {  50,   50,  0,  1 };
+
     count += 1;
     if (count % 5000 == 0)
     {
+        theta += 1;
+
+        mat4 rot = g3d::rotate(mat4(1<<16), theta);
+
         xpos += dir;
-        rasterize({xpos, 500}, {100, 600}, {300, 600});
+        rasterize(trans*rot, v0, v1, v2);
     
         if (xpos <= 80 || xpos >= 320)
             dir = -dir;

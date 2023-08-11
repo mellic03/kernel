@@ -6,7 +6,6 @@ limine_memmap_entry *sysfs_fast_memory;
 limine_memmap_entry *sysfs_main_memory;
 
 
-
 int
 system::fs::init( limine_memmap_response *res )
 {

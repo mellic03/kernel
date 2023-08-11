@@ -13,7 +13,7 @@ fixed operator + ( const fixed &a, const fixed &b )
 fixed operator - ( const fixed &a, const fixed &b )
 {
     fixed ab(0);
-    ab.data = a.data - b.data;
+    ab.data = a.data + ((~b.data) + 1);
     return ab;
 }
 
@@ -33,30 +33,55 @@ fixed operator / ( const fixed &a, const fixed &b )
     return ab;
 }
 
-
-
-fixed fixed_sin( const fixed &f )
+fixed &operator += ( fixed &a, const fixed &b )
 {
-    /*
-        int n = fixed.data >> 16;
-        n %= 360;
-        return fixed_sin_table[n];
-    */
-
-    return 1;
+    a.data += b.data;
+    return a;
 }
 
 
-fixed fixed_cos( const fixed &f )
-{
-    /*
-        int n = fixed.data >> 16;
-        n %= 360;
-        return fixed_sin_table[n];
-    */
 
-    return 1;
+// TRIG FUNCTIONS -------------------------------------------------
+// ----------------------------------------------------------------
+int32_t *fixed_sintable;
+int32_t *fixed_costable;
+int32_t *fixed_tantable;
+
+int
+load_fixed_trigtables( int32_t *baseptr )
+{
+    fixed_sintable = baseptr;
+    fixed_costable = baseptr + 360;
+    fixed_tantable = baseptr + 720;
+
+    return 0;
 }
 
 
+fixed
+fixed_sin( const fixed &f )
+{
+    int32_t idx = f.data >> 16;
+    idx %= 360;
+
+    fixed sinf(0);
+    sinf.data = fixed_sintable[idx];
+    return sinf;
+}
+
+
+fixed
+fixed_cos( const fixed &f )
+{
+    int32_t idx = f.data >> 16;
+    idx %= 360;
+
+    fixed cosf(0);
+    cosf.data = fixed_costable[idx];
+    return cosf;
+}
+
+
+// ----------------------------------------------------------------
+// ----------------------------------------------------------------
 
