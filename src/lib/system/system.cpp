@@ -11,7 +11,7 @@
 static volatile limine_framebuffer_request  framebuffer_request
 {
     .id = LIMINE_FRAMEBUFFER_REQUEST,
-    .revision = 0
+    .revision = 1
 };
 
 static volatile limine_memmap_request       memmap_request
@@ -40,20 +40,24 @@ kernel_init()
     load_fixed_trigtables((int32_t *)mod_req.response->modules[1]->address);
 
 
+    size_t w, h, p;
+    system::graphics::backbuffer(w, h, p);
+    printf("\nframebuffer width=%d, height=%d\n", w, h);
+
+
     printf("\n");
     for (size_t i=0; i<mod_req.response->module_count; i++)
     {
         auto mod = mod_req.response->modules[i];
-        printf("module %d\tsize %d\tbase: %d\n", i, mod->size, (uint64_t)(mod->address));
+        printf("module %d\tsize %u\tbase: %u\n", i, mod->size, (uint64_t)(mod->address));
     }
     printf("\n");
-
 
     for (uint64_t i=0; i<memmap_request.response->entry_count; i++)
     {
         limine_memmap_entry *entry = memmap_request.response->entries[i];
 
-        printf("memmap %d\tsize: %d\tbase: %d", i, entry->length, entry->base);
+        printf("memmap %d\tsize: %u\tbase: %d", i, entry->length, entry->base);
 
         switch (entry->type)
         {

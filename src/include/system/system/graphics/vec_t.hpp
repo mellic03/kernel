@@ -4,13 +4,6 @@
 #include "fixed_t.hpp"
 
 
-struct vec2
-{
-    union { fixed x, r; };
-    union { fixed y, g; };
-};
-
-
 struct vec3
 {
     union { fixed x, r; };
@@ -25,3 +18,14 @@ struct vec4
     union { fixed z, b; };
     union { fixed w, a; };
 };
+
+
+vec4 operator + ( const vec4 &u, const vec4 &v );
+vec4 operator - ( const vec4 &u, const vec4 &v );
+
+vec4 &operator += ( vec4 &v, const fixed &f );
+vec4 &operator -= ( vec4 &v, const fixed &f );
+vec4 &operator *= ( vec4 &v, const fixed &f );
+vec4 &operator /= ( vec4 &v, const fixed &f );
+
+vec4 operator - ( vec4 v );

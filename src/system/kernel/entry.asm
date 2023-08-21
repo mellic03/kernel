@@ -5,6 +5,7 @@ section .text
 
 
 enable_sse:
+    fninit
     mov  rax,  cr0
     and  ax,   0xFFFB
     or   ax,   0x2
@@ -16,7 +17,7 @@ enable_sse:
 
 
 _start:
-    ; call enable_sse
+    call enable_sse
     call kernel_entry
     ret
 

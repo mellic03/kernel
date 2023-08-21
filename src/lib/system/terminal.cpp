@@ -86,7 +86,7 @@ system::terminal::putstr( Terminal &t, const char *str )
 
 
 void
-system::terminal::putint( Terminal &t, uint64_t n )
+system::terminal::putint( Terminal &t, int64_t n )
 {
     if (n == 0)
     {
@@ -120,7 +120,7 @@ system::terminal::putint( Terminal &t, uint64_t n )
 
 
 void
-system::terminal::backspc ( Terminal &t )
+system::terminal::backspc( Terminal &t )
 {
     if (t.size > 0)
         t.size -= 1;
@@ -164,7 +164,6 @@ system::terminal::render( )
 }
 
 
-
 void
 system::terminal::putchar( char c )
 {
@@ -178,9 +177,42 @@ system::terminal::putstr( const char *str )
 }
 
 void
-system::terminal::putint( uint64_t n )
+system::terminal::putint( int64_t n )
+{
+    if (n < 0)
+    {
+        terminal::putchar('-');
+        n = -n;
+    }
+    terminal::putint( systerm_main_terminal, n );
+}
+
+void
+system::terminal::putuint( uint64_t n )
 {
     terminal::putint( systerm_main_terminal, n );
+}
+
+void
+system::terminal::putfixed( int64_t f )
+{
+    bool neg = f < 0;
+
+    int64_t whole = f / fixed_shift;
+    int64_t frac = (1000 * (f & SHIFT_MASK)) / fixed_shift;
+
+    if (neg)
+    {
+        terminal::putchar( '-'   );
+        terminal::putint ( -whole );
+    }
+    else
+    {
+        terminal::putint ( whole );
+    }
+
+    terminal::putchar( '.'   );
+    terminal::putint ( frac  );
 }
 
 void
@@ -188,8 +220,3 @@ system::terminal::backspc( )
 {
     terminal::backspc( systerm_main_terminal );
 }
-
-
-
-
-

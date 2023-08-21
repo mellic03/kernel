@@ -5,12 +5,13 @@
 #include "graphics/fixed_t.hpp"
 #include "graphics/mat_t.hpp"
 #include "graphics/vec_t.hpp"
+#include "graphics/vertex.hpp"
 
 
-void rasterize( vec2 v0, vec2 v1, vec2 v2 );
-void rasterize( mat2 transform, vec2 v0, vec2 v1, vec2 v2 );
-void rasterize( mat4 transform, vec4 v0, vec4 v1, vec4 v2 );
-
+namespace g3d
+{
+    void rasterize( mat4 transform, vertex v0, vertex v1, vertex v2, uint32_t r, uint32_t g, uint32_t b );
+};
 
 
 namespace system::graphics

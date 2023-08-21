@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <system/terminal.hpp>
-
+#include <system/graphics/fixed_t.hpp>
 
 
 static size_t
@@ -37,7 +37,15 @@ internal_printf( char format, va_list args )
         break;
 
     case 'd':
+        system::terminal::putint(va_arg(args, int));
+        break;
+
+    case 'u':
         system::terminal::putint(va_arg(args, uint64_t));
+        break;
+
+    case 'f':
+        system::terminal::putfixed(va_arg(args, int64_t));
         break;
     }
 }

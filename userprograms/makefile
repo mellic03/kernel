@@ -1,5 +1,5 @@
-INCLUDES     =  -I./src/include/libc  -I./src/include/libc++  -I./src/include/limine  -I./src/include/system
-LIBINCLUDES  =  -L./src/lib/libc	  -L./src/lib/libc++	  					      -L./src/lib/system
+INCLUDES     =  -I/home/michael/Desktop/code/C++/'corn kernel'/src/include/libc  -I/home/michael/Desktop/code/C++/'corn kernel'/src/include/libc++  -I/home/michael/Desktop/code/C++/'corn kernel'/src/include/limine  -I/home/michael/Desktop/code/C++/'corn kernel'/src/include/system
+LIBINCLUDES  =  -L/home/michael/Desktop/code/C++/'corn kernel'/src/lib/libc	  -L/home/michael/Desktop/code/C++/'corn kernel'/src/lib/libc++	  					      -L/home/michael/Desktop/code/C++/'corn kernel'/src/lib/system
 
 INC = $(INCLUDES) $(LIBINCLUDES)
 
@@ -9,7 +9,7 @@ override MAKEFLAGS += -rR
  
 # This is the name that our final kernel executable will have.
 # Change as needed.
-override KERNEL := myos.elf
+override KERNEL := userprog
  
 # Convenience macro to reliably declare user overridable variables.
 define DEFAULT_VAR =
@@ -55,6 +55,7 @@ override CFLAGS += \
     -fno-stack-check \
     -fno-lto \
     -fPIE \
+	-fPIC \
     -m64 \
     -march=x86-64 \
     -mabi=sysv \
@@ -65,32 +66,22 @@ override CFLAGS += \
  
 # Internal C preprocessor flags that should not be changed by the user.
 override CPPFLAGS := \
+	-nostartfiles \
+	-nodefaultlibs \
+    -fPIE \
+	-fPIC \
+	-ffreestanding \
     -I. \
     -std=c++17 \
     -MMD \
     -MP
  
-# Internal linker flags that should not be changed by the user.
-override LDFLAGS += \
-    -m elf_x86_64 \
-    -nostdlib \
-    -static \
-    -pie \
-    --no-dynamic-linker \
-    -z text \
-    -z max-page-size=0x1000 \
-    -T linker.ld
- 
-# Internal nasm flags that should not be changed by the user.
-override NASMFLAGS += \
-    -Wall \
-    -f elf64
  
 # Use "find" to glob all *.c, *.S, and *.asm files in the tree and obtain the
 # object and header dependency file names.
-override CPPFILES := $(shell find -L . -type f -name '*.cpp' | grep -v 'limine/')
-override ASFILES := $(shell find -L . -type f -name '*.S' | grep -v 'limine/')
-override NASMFILES := $(shell find -L . -type f -name '*.asm' | grep -v 'limine/')
+override CPPFILES := $(shell find -L ../src/lib -type f -name '*.cpp' | grep -v 'limine/')
+override ASFILES := $(shell find -L ../src/lib -type f -name '*.S' | grep -v 'limine/')
+override NASMFILES := $(shell find -L ../src/lib -type f -name '*.asm' | grep -v 'limine/')
 override OBJ := $(CPPFILES:.cpp=.cpp.o) $(ASFILES:.S=.S.o) $(NASMFILES:.asm=.asm.o)
 override HEADER_DEPS := $(CPPFILES:.cpp=.cpp.d) $(ASFILES:.S=.S.d)
  
@@ -100,7 +91,7 @@ all: $(KERNEL)
  
 # Link rules for the final kernel executable.
 $(KERNEL): $(OBJ)
-	$(LD) $(OBJ) $(LDFLAGS) -o $@
+	g++ $(CFLAGS) $(CPPFLAGS) $(OBJ) -o $@
  
 # Include header dependencies.
 -include $(HEADER_DEPS)
@@ -112,11 +103,11 @@ $(KERNEL): $(OBJ)
 # Compilation rules for *.S files.
 %.S.o: %.S
 	$(CXX) $(CFLAGS) $(CPPFLAGS) $(INC) -c $< -o $@
- 
+
 # Compilation rules for *.asm (nasm) files.
 %.asm.o: %.asm
 	nasm $(NASMFLAGS) $(INC) $< -o $@
- 
+
 # Remove object files and the final executable.
 .PHONY: clean
 clean:

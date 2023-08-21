@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <system/graphics/fixed_t.hpp>
 
 struct Terminal
 {
@@ -23,15 +23,16 @@ namespace system::terminal
 
     void        putchar ( Terminal &, char         );
     void        putstr  ( Terminal &, const char * );
-    void        putint  ( Terminal &, uint64_t     );
+    void        putint  ( Terminal &, int64_t      );
     void        backspc ( Terminal &               );
 
     void        putchar ( char         );
     void        putstr  ( const char * );
-    void        putint  ( uint64_t     );
+    void        putint  ( int64_t      );
+    void        putuint ( uint64_t     );
+    void        putfixed( int64_t      );
     void        backspc (              );
 
-    // void        clear   ( Terminal & );
     void        render  ( );
 };
 

@@ -34,3 +34,7 @@ mkdir -p output
 mv image.iso output/image.iso
 cp -R iso_root output/.
 # rm -R iso_root
+
+
+# Run in qemu
+qemu-system-x86_64 -boot d -cdrom output/image.iso -m 4096 -no-reboot
